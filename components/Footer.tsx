@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Share2, Mail } from "lucide-react";
+import {  Mail, X } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -25,13 +25,13 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/blog" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
-                  Journal
+                <Link href="/about" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
+                  About
                 </Link>
               </li>
               <li>
-                <Link href="/archive" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
-                  Archives
+                <Link href="/categories" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
+                  Categories
                 </Link>
               </li>
             </ul>
@@ -51,7 +51,12 @@ export default function Footer() {
                 <Link href="/privacy" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
                   Privacy
                 </Link>
-              </li>
+                </li>
+                <li>
+                <Link href="/terms" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
+                  Terms of Service
+                </Link>
+                </li>
             </ul>
           </div>
         </div>
@@ -60,14 +65,14 @@ export default function Footer() {
         <div className="space-y-6 flex flex-col items-start md:items-end">
           <div className="flex gap-4">
             <a
-              href="#"
+              href="https://x.com/ShriparnaSharma"
               className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
               aria-label="Share"
             >
-              <Share2 className="w-4 h-4" />
+              <X className="w-4 h-4" />
             </a>
             <a
-              href="#"
+              href="mailto:shriparnasharma2008@gmail.com"
               className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
               aria-label="Email"
             >
@@ -75,7 +80,7 @@ export default function Footer() {
             </a>
           </div>
           <p className="text-on-surface-variant text-xs md:text-right font-body">
-            © 2024 The Sunday Script. A digital sanctuary for life and literature.
+            © 2026 The Sunday Script. A digital sanctuary for life and literature.
           </p>
         </div>
 

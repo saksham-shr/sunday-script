@@ -26,7 +26,7 @@ const beVietnamPro = Be_Vietnam_Pro({
 });
 
 export const metadata: Metadata = {
-  title: "Sunday Script | Stories of Life, Pages of Literature",
+  title: "The Sunday Script | Stories of Life, Pages of Literature",
   description: "A digital sanctuary where we explore the intersections of human experience and the written word.",
 };
 

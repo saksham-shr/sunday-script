@@ -2,55 +2,89 @@ import Hero from "@/components/Hero";
 import CategoryGrid from "@/components/CategoryGrid";
 import RecentPosts from "@/components/RecentPosts";
 import Newsletter from "@/components/Newsletter";
+import { supabase } from "@/lib/supabase";
 
+// ---------- Types for raw DB rows ----------
+type CategoryRow = {
+  name: string;
+  icon: string | null;
+  post_categories: { count: number }[];
+};
 
-const categories = [
-  { name: "The Classics", count: 42, icon: "book" },
-  { name: "Nature's Verse", count: 28, icon: "leaf" },
-  { name: "Morning Rituals", count: 15, icon: "coffee" },
-  { name: "Art of Living", count: 33, icon: "brush" },
-  { name: "Poetry Corner", count: 19, icon: "feather" },
-  { name: "Philosophy", count: 24, icon: "sparkles" },
-];
+type PostRow = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  cover_image: string | null;
+  author_name: string | null;
+  published_at: string | null;
+  post_categories: {
+    categories: { name: string } | null;
+  }[];
+};
 
-const recentPosts = [
-  {
-    slug: "epistolary-art-of-living",
-    title: "The Epistolary Art of Living",
-    excerpt: "In an age of instant gratification, the slow movement of ink on paper offers a profound connection to our inner selves and those we love.",
-    category: "Philosophy",
-    author: "Marcus Aurelius",
-    date: "June 12, 2024",
-    coverImage: "/posts/letters.jpg",
-  },
-  {
-    slug: "silence-between-words",
-    title: "The Silence Between the Words",
-    excerpt: "Why the most important things are often left unsaid, and how we can learn to appreciate the quiet spaces in our daily narratives.",
-    category: "Minimalism",
-    author: "Clara Reeves",
-    date: "June 08, 2024",
-    coverImage: "/posts/window.jpg",
-  },
-  {
-    slug: "odysseys-in-paper-and-ink",
-    title: "Odysseys in Paper and Ink",
-    excerpt: "Tracing the maps of fictional worlds that taught us more about our own reality than any history book ever could.",
-    category: "Literature",
-    author: "Julian Thorne",
-    date: "June 01, 2024",
-    coverImage: "/posts/library.jpg",
-  },
-];
+export default async function Home() {
+  // 1. Fetch categories WITH post count
+  const { data: categoriesRaw } = await supabase
+    .from("categories")
+    .select(`
+      name,
+      icon,
+      post_categories ( count )
+    `);
 
-export default function Home() {
+  // 2. Transform categories → shape CategoryGrid expects
+  const categories = ((categoriesRaw ?? []) as unknown as CategoryRow[]).map(
+    (cat) => ({
+      name: cat.name,
+      icon: cat.icon ?? "book",
+      count: cat.post_categories?.[0]?.count ?? 0,
+    })
+  );
+
+  // 3. Fetch the 3 most recent published posts
+  const { data: postsRaw } = await supabase
+    .from("posts")
+    .select(`
+      id,
+      slug,
+      title,
+      excerpt,
+      cover_image,
+      author_name,
+      published_at,
+      post_categories (
+        categories ( name )
+      )
+    `)
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(3);
+
+  // 4. Transform posts → shape RecentPosts expects
+  const recentPosts = ((postsRaw ?? []) as unknown as PostRow[]).map((post) => ({
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt ?? "",
+    category: post.post_categories[0]?.categories?.name ?? "Uncategorized",
+    author: post.author_name ?? "Shriparna",
+    date: post.published_at
+      ? new Date(post.published_at).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : "",
+    coverImage: post.cover_image ?? "/placeholder.jpg",
+  }));
+
   return (
     <main className="pt-32 px-6 lg:px-12 max-w-[1600px] mx-auto">
       <Hero />
       <CategoryGrid categories={categories} />
       <RecentPosts posts={recentPosts} />
       <Newsletter />
-      
     </main>
   );
 }

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Compass, Music, PenLine } from "lucide-react";
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
@@ -36,37 +37,41 @@ export default function AboutPage() {
       </section>
 
       {/* ====== BIO ====== */}
-      <section className="bg-surface-container-low rounded-xl p-12 lg:p-24 mb-24">
-        <div className="max-w-3xl mx-auto space-y-6 font-body text-on-surface-variant leading-relaxed">
-          <p>
-            <span className="float-left font-headline text-7xl leading-none mr-3 mt-2 text-primary">
-              W
-            </span>
-            ords have always been my way of navigating the world. From the dusty
-            shelves of my grandmother&rsquo;s library to the bustling literary circles
-            of Paris, my journey has been one of constant discovery. I believe
-            that every life is a collection of essays, some messy and unedited,
-            others polished and profound.
-          </p>
-          <p>
-            In these digital pages, I seek to bridge the gap between classic
-            literature and modern living. It is a space for those who find solace
-            in the scent of old paper but embrace the fluidity of contemporary
-            thought. We explore the intersection of life&rsquo;s simple pleasures—a
-            perfectly brewed tea, the golden hour light—and the complex
-            narratives that define our humanity.
-          </p>
-          <p>
-            When I&rsquo;m not writing, you&rsquo;ll likely find me wandering through
-            independent bookstores or tending to my overgrown rose garden. This
-            blog is my sanctuary, and I am honored that you&rsquo;ve chosen to spend a
-            small part of your day here with me.
-          </p>
-          <p className="text-right font-accent text-3xl text-primary pt-6">
-            Shriparna
-          </p>
-        </div>
-      </section>
+<section className="bg-surface-container-low rounded-xl p-12 lg:p-24 mb-24">
+  <div className="max-w-3xl mx-auto space-y-6 font-body text-on-surface-variant leading-relaxed">
+    <p>
+      <span className="float-left font-headline text-7xl leading-none mr-3 mt-2 text-primary">
+        W
+      </span>
+      ords have always been my escape. Whether it is through reading,
+      listening to music, or analysing the lyrics and metaphors of songs,
+      I found a love for language and its ability to transcend normal
+      speech.
+    </p>
+    <p>
+      I write whenever my mind becomes too full, and there seems to be
+      nowhere else left to put these thoughts except for the blank page
+      in front of me or the Google Doc on my computer screen. For some
+      reason, the pages of paper and the screen of my computer seem to
+      listen to me better than anyone else ever does.
+    </p>
+    <p>
+      Most of my interests lie within the grey area—the analysis of
+      lyrics, searching for deeper meaning within lines of poetry, and
+      holding onto lyrics that seem to speak to me personally. As such,
+      my blog reflects that—I am someone who loves to read, write, and
+      think about whatever comes to my mind.
+    </p>
+    <p>
+      Outside of that, you will most likely find me daydreaming, binging
+      random variety shows, and romanticizing life too much after
+      watching a good rom-com.
+    </p>
+    <p className="text-right font-accent text-3xl text-primary pt-6">
+      Shriparna
+    </p>
+  </div>
+</section>
 
       {/* ====== CURRENT OBSESSIONS ====== */}
       <section className="mb-24">
@@ -127,9 +132,12 @@ export default function AboutPage() {
         <h2 className="text-3xl lg:text-5xl font-headline italic text-on-surface mb-8">
           Have a story to share? Let&rsquo;s write together.
         </h2>
-        <button className="bg-primary text-on-primary px-8 py-4 rounded-full font-label text-sm uppercase tracking-widest hover:bg-primary-container transition-colors shadow-lg">
+        <Link
+          href="/guest-post"
+          className="inline-block bg-primary text-on-primary px-8 py-4 rounded-full font-label text-sm uppercase tracking-widest hover:bg-primary-container transition-colors shadow-lg"
+        >
           Pitch a Guest Post
-        </button>
+        </Link>
       </section>
 
     </main>
