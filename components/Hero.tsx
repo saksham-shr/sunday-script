@@ -8,7 +8,7 @@ export default function Hero() {
       <div className="w-full lg:w-3/5 space-y-4 md:space-y-6 text-center lg:text-left">
 
         <span className="font-accent text-xl sm:text-2xl text-primary block">
-          Curated by Shrimpy
+          Curated by Shriparna
         </span>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl leading-tight font-headline italic text-on-surface">
