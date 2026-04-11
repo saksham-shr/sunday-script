@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Serif, Inter, Caveat, Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-
+import Footer from "@/components/Footer";
 const notoSerif = Noto_Serif({
   variable: "--font-headline",
   subsets: ["latin"],
@@ -42,7 +42,9 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-surface text-on-surface">
         <Navbar />
+        
         {children}
+        <Footer />
       </body>
     </html>
   );
