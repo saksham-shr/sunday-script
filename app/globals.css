@@ -1,26 +1,47 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Colors */
+  --color-surface: #f9f9f6;
+  --color-surface-container-low: #f4f4f1;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container: #eeeeeb;
+  --color-surface-container-high: #e8e8e5;
+  --color-surface-container-highest: #e2e3e0;
+  --color-primary: #865140;
+  --color-primary-container: #c68774;
+  --color-primary-fixed: #ffdbd0;
+  --color-on-primary: #ffffff;
+  --color-on-surface: #1a1c1b;
+  --color-on-surface-variant: #52443f;
+  --color-secondary-container: #dce1dc;
+  --color-outline-variant: #d7c2bc;
+
+  /* Font Families */
+  --font-headline: "Noto Serif", serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Be Vietnam Pro", sans-serif;
+  --font-accent: "Caveat", cursive;
+
+  /* Border Radius */
+  --radius-DEFAULT: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+  --radius-full: 9999px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base Styles */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-headline);
+}
+
+* {
+  transition-duration: 300ms;
+  transition-timing-function: ease-in-out;
 }
