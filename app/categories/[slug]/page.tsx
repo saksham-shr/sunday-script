@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Leaf, Coffee, Brush, Feather, Sparkles, type LucideIcon } from "lucide-react";
@@ -30,6 +31,47 @@ type PostRow = {
   published_at: string | null;
 };
 
+// ─── Per-category metadata ─────────────────────────────────────────────────────
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+
+  const { data } = await supabase
+    .from("categories")
+    .select("name, description")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (!data) return {};
+
+  const title = data.name;
+  const description =
+    data.description ??
+    `Essays in the ${data.name} category on The Sunday Script.`;
+  const url = `https://thesundayscript.blog/categories/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      url,
+      title: `${title} | The Sunday Script`,
+      description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | The Sunday Script`,
+      description,
+    },
+  };
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function SingleCategoryPage({
   params,
 }: {

@@ -1,6 +1,27 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { BookOpen, Leaf, Coffee, Brush, Feather, Sparkles, type LucideIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+
+export const metadata: Metadata = {
+  title: "Categories",
+  description:
+    "Browse essays by category on The Sunday Script. From literature and poetry to life, music, and lyric analysis.",
+  alternates: { canonical: "https://thesundayscript.blog/categories" },
+  openGraph: {
+    type: "website",
+    url: "https://thesundayscript.blog/categories",
+    title: "Browse Categories | The Sunday Script",
+    description:
+      "Browse essays by category on The Sunday Script. From literature and poetry to life, music, and lyric analysis.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Browse Categories | The Sunday Script",
+    description:
+      "Browse essays by category on The Sunday Script. From literature and poetry to life, music, and lyric analysis.",
+  },
+};
 
 const iconMap: Record<string, LucideIcon> = {
   book: BookOpen,
@@ -70,7 +91,6 @@ export default async function CategoriesPage() {
           </p>
         </div>
       ) : (
-        /* Category grid */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
           {categories.map((cat, index) => {
             const Icon = iconMap[cat.icon] ?? BookOpen;

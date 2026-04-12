@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -5,6 +6,8 @@ import { Calendar, Clock } from "lucide-react";
 import BlogSidebar from "@/components/BlogSidebar";
 import CommentSection from "@/components/CommentSection";
 import { supabase } from "@/lib/supabase";
+
+const BASE_URL = "https://thesundayscript.blog";
 
 type PostRow = {
   id: string;
@@ -34,13 +37,59 @@ type CommentRow = {
   created_at: string;
 };
 
-// Reading time: ~200 words per minute
 function calculateReadingTime(html: string): number {
   const text = html.replace(/<[^>]+>/g, " ");
   const words = text.trim().split(/\s+/).length;
   return Math.max(1, Math.ceil(words / 200));
 }
 
+// ─── Per-post metadata ────────────────────────────────────────────────────────
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+
+  const { data } = await supabase
+    .from("posts")
+    .select("title, excerpt, cover_image, author_name, published_at")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle();
+
+  if (!data) return {};
+
+  const title = data.title;
+  const description =
+    data.excerpt ?? "Read this essay on The Sunday Script.";
+  const url = `${BASE_URL}/blog/${slug}`;
+  const image = data.cover_image ?? "/coffee-books.png";
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title,
+      description,
+      siteName: "The Sunday Script",
+      publishedTime: data.published_at ?? undefined,
+      authors: data.author_name ? [data.author_name] : ["Shriparna"],
+      images: [{ url: image, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+  };
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default async function BlogDetailPage({
   params,
 }: {
@@ -48,7 +97,6 @@ export default async function BlogDetailPage({
 }) {
   const { slug } = await params;
 
-  // 1. Fetch the post + its category + likes count
   const { data: postData } = await supabase
     .from("posts")
     .select(
@@ -86,7 +134,6 @@ export default async function BlogDetailPage({
       })
     : "";
 
-  // 2. Fetch 2 recommended posts (most recent, exclude current)
   const { data: recommendedRaw } = await supabase
     .from("posts")
     .select("slug, title, content")
@@ -97,7 +144,6 @@ export default async function BlogDetailPage({
 
   const recommended = (recommendedRaw ?? []) as RecommendedRow[];
 
-  // 3. Fetch approved comments for this post
   const { data: commentsRaw } = await supabase
     .from("comments")
     .select("id, author_name, content, created_at")
@@ -107,8 +153,38 @@ export default async function BlogDetailPage({
 
   const comments = (commentsRaw ?? []) as CommentRow[];
 
+  // JSON-LD Article schema
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt ?? "",
+    image: post.cover_image ?? `${BASE_URL}/coffee-books.png`,
+    datePublished: post.published_at ?? undefined,
+    author: {
+      "@type": "Person",
+      name: post.author_name ?? "Shriparna",
+      url: `${BASE_URL}/about`,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "The Sunday Script",
+      url: BASE_URL,
+    },
+    url: `${BASE_URL}/blog/${post.slug}`,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${BASE_URL}/blog/${post.slug}`,
+    },
+  };
+
   return (
     <main className="pt-20 md:pt-28 pb-12 md:pb-24">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+
       {/* Cover image banner */}
       {post.cover_image && (
         <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8 md:mb-14">
@@ -173,10 +249,6 @@ export default async function BlogDetailPage({
 
           {/* Center: article content */}
           <article className="min-w-0 max-w-2xl mx-auto w-full">
-            {/*
-              TODO Phase E+: when guest posts go live, sanitize with isomorphic-dompurify
-              For now all content is trusted (seeded or admin-entered).
-            */}
             <div
               className="blog-content"
               dangerouslySetInnerHTML={{ __html: post.content }}

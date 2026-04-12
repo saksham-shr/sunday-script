@@ -1,6 +1,36 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { Compass, Music, PenLine } from "lucide-react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Meet Shriparna — the curator of The Sunday Script. A collector of stories, quiet mornings, and good coffee.",
+  alternates: { canonical: "https://thesundayscript.blog/about" },
+  openGraph: {
+    type: "profile",
+    url: "https://thesundayscript.blog/about",
+    title: "About Shriparna | The Sunday Script",
+    description:
+      "Meet Shriparna — the curator of The Sunday Script. A collector of stories, quiet mornings, and good coffee.",
+    images: [
+      {
+        url: "/image.png",
+        width: 1200,
+        height: 630,
+        alt: "Shriparna — The Sunday Script",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Shriparna | The Sunday Script",
+    description:
+      "Meet Shriparna — the curator of The Sunday Script. A collector of stories, quiet mornings, and good coffee.",
+    images: ["/image.png"],
+  },
+};
 
 export default function AboutPage() {
   return (
