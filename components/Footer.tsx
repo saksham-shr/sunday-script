@@ -1,13 +1,13 @@
 import Link from "next/link";
-import {  Mail, X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="w-full py-16 px-8 mt-24 bg-surface-container-low">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-[1600px] mx-auto">
+    <footer className="w-full py-10 md:py-16 px-4 md:px-8 mt-12 md:mt-20 bg-surface-container-low">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-400 mx-auto">
 
         {/* Brand */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <div className="text-xl font-headline font-bold text-on-surface">
             The Sunday Script
           </div>
@@ -19,7 +19,7 @@ export default function Footer() {
 
         {/* Link Columns */}
         <div className="grid grid-cols-2 gap-8">
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <h4 className="font-label text-xs font-bold uppercase tracking-[0.2em] text-on-surface">
               Explore
             </h4>
@@ -37,7 +37,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <h4 className="font-label text-xs font-bold uppercase tracking-[0.2em] text-on-surface">
               Company
             </h4>
@@ -51,18 +51,18 @@ export default function Footer() {
                 <Link href="/privacy" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
                   Privacy
                 </Link>
-                </li>
-                <li>
+              </li>
+              <li>
                 <Link href="/terms" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
                   Terms of Service
                 </Link>
-                </li>
+              </li>
             </ul>
           </div>
         </div>
 
         {/* Socials + Copyright */}
-        <div className="space-y-6 flex flex-col items-start md:items-end">
+        <div className="space-y-4 md:space-y-6 flex flex-col items-start md:items-end">
           <div className="flex gap-4">
             <a
               href="https://x.com/ShriparnaSharma"

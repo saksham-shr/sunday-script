@@ -80,7 +80,7 @@ export default async function Home() {
   }));
 
   return (
-    <main className="pt-32 px-6 lg:px-12 max-w-[1600px] mx-auto">
+    <main className="pt-24 md:pt-32 max-w-400 mx-auto">
       <Hero />
       <CategoryGrid categories={categories} />
       <RecentPosts posts={recentPosts} />

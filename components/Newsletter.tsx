@@ -69,7 +69,7 @@ export default function Newsletter() {
     status === "loading" || status === "success" || status === "already";
 
   return (
-    <section className="relative overflow-hidden bg-surface-container-low rounded-xl p-12 lg:p-24 mb-32 flex flex-col items-center text-center">
+    <section className="relative overflow-hidden bg-surface-container-low rounded-xl px-4 py-10 md:p-12 lg:p-20 mb-12 md:mb-20 lg:mb-32 mx-4 md:mx-8 lg:mx-12 flex flex-col items-center text-center">
       {/* Decorative blur blobs */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-primary-fixed opacity-20 blur-3xl -mr-32 -mt-32"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary-container opacity-20 blur-3xl -ml-32 -mb-32"></div>
@@ -80,7 +80,7 @@ export default function Newsletter() {
           Weekly Muse
         </span>
 
-        <h2 className="text-4xl lg:text-5xl font-headline italic">
+        <h2 className="text-2xl md:text-4xl lg:text-5xl font-headline italic">
           A Sunday morning invitation.
         </h2>
 

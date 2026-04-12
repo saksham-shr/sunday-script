@@ -18,14 +18,14 @@ type RecentPostsProps = {
 
 export default function RecentPosts({ posts }: RecentPostsProps) {
   return (
-    <section className="py-20 px-6 md:px-12 lg:px-24">
+    <section className="py-10 md:py-16 px-4 md:px-8 lg:px-12">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-end justify-between mb-12">
+        <div className="flex items-end justify-between mb-6 md:mb-10">
           <div>
             <p className="font-label uppercase tracking-widest text-sm text-on-surface-variant mb-2">
               Latest Essays
             </p>
-            <h2 className="text-4xl md:text-5xl font-headline tracking-tight">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-headline tracking-tight">
               Recent Writings
             </h2>
           </div>

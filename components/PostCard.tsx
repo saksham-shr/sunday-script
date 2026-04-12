@@ -26,7 +26,7 @@ export default function PostCard({
       className="group block bg-surface-container-lowest rounded-lg overflow-hidden border border-primary-fixed shadow-sm hover:shadow-xl transition-shadow duration-500"
     >
       {/* Cover Image */}
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-36 md:h-44 overflow-hidden">
         <Image
           src={coverImage}
           alt={title}
@@ -37,24 +37,24 @@ export default function PostCard({
       </div>
 
       {/* Content */}
-      <div className="p-8 space-y-4">
+      <div className="p-4 md:p-6 space-y-3">
         {/* Category Badge */}
         <span className="inline-block bg-primary-fixed/50 text-primary px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-widest">
           {category}
         </span>
 
         {/* Title */}
-        <h3 className="text-2xl font-headline leading-snug group-hover:text-primary transition-colors">
+        <h3 className="text-lg md:text-xl lg:text-2xl font-headline leading-snug group-hover:text-primary transition-colors">
           {title}
         </h3>
 
         {/* Excerpt */}
-        <p className="text-on-surface-variant font-body text-sm leading-relaxed line-clamp-3">
+        <p className="text-on-surface-variant font-body text-sm leading-relaxed line-clamp-2 md:line-clamp-3">
           {excerpt}
         </p>
 
         {/* Footer: Author + Date */}
-        <div className="pt-4 flex items-center justify-between">
+        <div className="pt-2 md:pt-4 flex items-center justify-between">
           <span className="font-headline italic text-sm text-primary">
             By {author}
           </span>

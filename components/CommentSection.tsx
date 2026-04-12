@@ -60,9 +60,9 @@ export default function CommentSection({
       .toUpperCase();
 
   return (
-    <section id="comments" className="mt-24 max-w-3xl mx-auto">
-      <div className="flex items-end justify-between mb-10">
-        <h2 className="text-3xl md:text-4xl font-headline italic text-on-surface">
+    <section id="comments" className="mt-12 md:mt-20 max-w-3xl mx-auto">
+      <div className="flex items-end justify-between mb-6 md:mb-10">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-headline italic text-on-surface">
           Voices from the Pages
         </h2>
         <span className="font-label uppercase tracking-widest text-xs text-on-surface-variant">
@@ -73,24 +73,24 @@ export default function CommentSection({
 
       {/* Comments list */}
       {comments.length === 0 ? (
-        <div className="mb-12 py-10 px-6 bg-surface-container-low rounded-2xl text-center border border-dashed border-outline-variant">
+        <div className="mb-8 md:mb-12 py-8 px-4 md:px-6 bg-surface-container-low rounded-2xl text-center border border-dashed border-outline-variant">
           <p className="font-body italic text-on-surface-variant">
             Be the first to leave a reflection.
           </p>
         </div>
       ) : (
-        <div className="space-y-4 mb-12">
+        <div className="space-y-3 mb-8 md:mb-12">
           {comments.map((c) => (
             <article
               key={c.id}
-              className="bg-surface-container-lowest rounded-2xl p-6 md:p-8"
+              className="bg-surface-container-lowest rounded-2xl p-4 md:p-6 lg:p-8"
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-primary-fixed/40 flex items-center justify-center font-headline text-primary font-bold">
+                <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-primary-fixed/40 flex items-center justify-center font-headline text-primary font-bold text-sm">
                   {c.author_name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-headline font-semibold text-on-surface">
+                  <p className="font-headline font-semibold text-on-surface text-sm md:text-base">
                     {c.author_name}
                   </p>
                   <p className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant">
@@ -98,7 +98,7 @@ export default function CommentSection({
                   </p>
                 </div>
               </div>
-              <p className="text-on-surface-variant font-body leading-relaxed whitespace-pre-wrap">
+              <p className="text-on-surface-variant font-body text-sm leading-relaxed whitespace-pre-wrap">
                 {c.content}
               </p>
             </article>
@@ -107,7 +107,7 @@ export default function CommentSection({
       )}
 
       {/* Form / success message */}
-      <div className="bg-surface-container-low rounded-2xl p-8 md:p-10">
+      <div className="bg-surface-container-low rounded-2xl p-5 md:p-8 lg:p-10">
         {status === "success" ? (
           <div className="text-center py-6 space-y-4">
             <div className="w-14 h-14 mx-auto rounded-full bg-primary-fixed/40 flex items-center justify-center">
@@ -116,10 +116,10 @@ export default function CommentSection({
                 strokeWidth={1.5}
               />
             </div>
-            <h3 className="text-2xl font-headline italic text-on-surface">
+            <h3 className="text-xl md:text-2xl font-headline italic text-on-surface">
               Thanks for your reflection
             </h3>
-            <p className="text-on-surface-variant font-body max-w-md mx-auto">
+            <p className="text-on-surface-variant font-body text-sm max-w-md mx-auto">
               Your comment is awaiting review. Once approved, it will appear
               here among the other voices.
             </p>
@@ -132,11 +132,11 @@ export default function CommentSection({
           </div>
         ) : (
           <>
-            <h3 className="text-2xl font-headline italic text-on-surface mb-6">
+            <h3 className="text-xl md:text-2xl font-headline italic text-on-surface mb-5 md:mb-6">
               Leave a reflection
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input
                   type="text"
                   required
@@ -144,7 +144,7 @@ export default function CommentSection({
                   onChange={(e) => setName(e.target.value)}
                   disabled={status === "loading"}
                   placeholder="Name"
-                  className="bg-surface-container-lowest rounded-full px-6 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:opacity-60"
+                  className="bg-surface-container-lowest rounded-full px-5 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:opacity-60"
                 />
                 <input
                   type="email"
@@ -153,7 +153,7 @@ export default function CommentSection({
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={status === "loading"}
                   placeholder="Email"
-                  className="bg-surface-container-lowest rounded-full px-6 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:opacity-60"
+                  className="bg-surface-container-lowest rounded-full px-5 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none disabled:opacity-60"
                 />
               </div>
               <textarea
@@ -161,9 +161,9 @@ export default function CommentSection({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 disabled={status === "loading"}
-                rows={5}
+                rows={4}
                 placeholder="Share your thoughts..."
-                className="w-full bg-surface-container-lowest rounded-2xl px-6 py-4 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none resize-none disabled:opacity-60"
+                className="w-full bg-surface-container-lowest rounded-2xl px-5 py-4 text-sm focus:ring-2 focus:ring-primary/20 focus:outline-none resize-none disabled:opacity-60"
               />
 
               {status === "error" && (
@@ -173,7 +173,7 @@ export default function CommentSection({
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="flex items-center justify-center gap-2 bg-primary text-on-primary px-8 py-3 rounded-full font-label text-xs uppercase tracking-widest hover:bg-primary-container transition-colors shadow-lg disabled:opacity-80 disabled:cursor-not-allowed"
+                className="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 md:px-8 py-3 rounded-full font-label text-xs uppercase tracking-widest hover:bg-primary-container transition-colors shadow-lg disabled:opacity-80 disabled:cursor-not-allowed"
               >
                 {status === "loading" ? (
                   <>
@@ -191,5 +191,3 @@ export default function CommentSection({
     </section>
   );
 }
-
-

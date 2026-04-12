@@ -108,24 +108,26 @@ export default async function BlogDetailPage({
   const comments = (commentsRaw ?? []) as CommentRow[];
 
   return (
-    <main className="pt-28 pb-24">
+    <main className="pt-20 md:pt-28 pb-12 md:pb-24">
       {/* Cover image banner */}
       {post.cover_image && (
-        <div className="relative h-[280px] md:h-[400px] lg:h-[480px] max-w-7xl mx-auto rounded-2xl overflow-hidden mb-16">
-          <Image
-            src={post.cover_image}
-            alt={post.title}
-            fill
-            priority
-            sizes="(max-width: 1280px) 100vw, 1280px"
-            className="object-cover"
-          />
+        <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8 md:mb-14">
+          <div className="relative h-40 sm:h-55 md:h-85 lg:h-110 rounded-2xl overflow-hidden">
+            <Image
+              src={post.cover_image}
+              alt={post.title}
+              fill
+              priority
+              sizes="(max-width: 1280px) 100vw, 1280px"
+              className="object-cover"
+            />
+          </div>
         </div>
       )}
 
       {/* Article header — centered */}
-      <div className="max-w-3xl mx-auto px-6 text-center mb-16">
-        <div className="flex items-center justify-center gap-3 font-label uppercase tracking-widest text-xs text-on-surface-variant mb-6">
+      <div className="max-w-3xl mx-auto px-4 md:px-6 text-center mb-8 md:mb-14">
+        <div className="flex items-center justify-center gap-3 font-label uppercase tracking-widest text-xs text-on-surface-variant mb-4 md:mb-6">
           {category && (
             <Link
               href={`/categories/${category.slug}`}
@@ -138,7 +140,7 @@ export default async function BlogDetailPage({
           <span>{formattedDate}</span>
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-headline italic leading-tight text-on-surface mb-8">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-headline italic leading-tight text-on-surface mb-6 md:mb-8">
           {post.title}
         </h1>
 
@@ -159,7 +161,7 @@ export default async function BlogDetailPage({
       </div>
 
       {/* Body layout — 3 columns on desktop */}
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-[60px_1fr_260px] gap-8 lg:gap-12">
           {/* Left: sticky action sidebar */}
           <BlogSidebar
