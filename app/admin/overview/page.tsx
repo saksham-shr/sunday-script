@@ -148,30 +148,21 @@ export default function AdminOverviewPage() {
 
           {/* Stats */}
           <div className="a-stats">
-            <div className="a-stat">
-              <div className="a-stat__label">Posts published</div>
-              <div className="a-stat__value">{stats?.published ?? "—"}</div>
-              <div className="a-stat__sub">All time</div>
-            </div>
-            <div className="a-stat a-stat--accent">
-              <div className="a-stat__label">Pending review</div>
-              <div className="a-stat__value">{stats?.pending_review ?? "—"}</div>
-              <div className="a-stat__sub">From collaborators</div>
-            </div>
-            <div className="a-stat">
-              <div className="a-stat__label">Active collaborators</div>
-              <div className="a-stat__value">{stats?.collaborators ?? "—"}</div>
-              <div className="a-stat__sub">
-                {(stats?.pending_collabs ?? 0) > 0
-                  ? `${stats!.pending_collabs} pending request${stats!.pending_collabs !== 1 ? "s" : ""}`
-                  : "No pending requests"}
+            {[
+              { label: "Posts published", value: stats?.published, sub: "All time", accent: false },
+              { label: "Pending review", value: stats?.pending_review, sub: "From collaborators", accent: true },
+              { label: "Active collaborators", value: stats?.collaborators, sub: stats ? ((stats.pending_collabs > 0) ? `${stats.pending_collabs} pending request${stats.pending_collabs !== 1 ? "s" : ""}` : "No pending requests") : null, accent: false },
+              { label: "Guest submissions", value: stats?.guest_unread, sub: "Pending in inbox", accent: false },
+            ].map(({ label, value, sub, accent }) => (
+              <div key={label} className={`a-stat ${accent ? "a-stat--accent" : ""}`}>
+                <div className="a-stat__label">{label}</div>
+                {value == null
+                  ? <div className="a-skeleton" style={{ height: 36, width: 56, marginTop: 10, marginBottom: 6 }} />
+                  : <div className="a-stat__value">{value}</div>
+                }
+                <div className="a-stat__sub">{sub ?? <span className="a-skeleton" style={{ height: 12, width: 100, display: "block" }} />}</div>
               </div>
-            </div>
-            <div className="a-stat">
-              <div className="a-stat__label">Guest submissions</div>
-              <div className="a-stat__value">{stats?.guest_unread ?? "—"}</div>
-              <div className="a-stat__sub">Pending in inbox</div>
-            </div>
+            ))}
           </div>
 
           {/* Quick actions */}

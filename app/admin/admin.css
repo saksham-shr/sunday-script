@@ -314,6 +314,18 @@
 /* ---- Divider ---- */
 .a-divider { height: 1px; background: var(--line); margin: 24px 0; border: none; }
 
+/* ---- Skeleton ---- */
+@keyframes a-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+.a-skeleton {
+  background: linear-gradient(90deg, var(--cream-deep) 25%, var(--cream) 50%, var(--cream-deep) 75%);
+  background-size: 600px 100%;
+  animation: a-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--a-radius);
+}
+
 /* ---- Misc ---- */
 .a-mono { font-family: var(--a-mono); }
 .a-serif { font-family: var(--a-serif); }
