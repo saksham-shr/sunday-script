@@ -1,35 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen, Leaf, Coffee, Brush, Feather, Sparkles, type LucideIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Categories",
-  description:
-    "Browse essays by category on The Sunday Script. From literature and poetry to life, music, and lyric analysis.",
+  description: "Browse essays by category on The Sunday Script. From literature and poetry to life, music, and lyric analysis.",
   alternates: { canonical: "https://thesundayscript.blog/categories" },
-  openGraph: {
-    type: "website",
-    url: "https://thesundayscript.blog/categories",
-    title: "Browse Categories | The Sunday Script",
-    description:
-      "Browse essays by category on The Sunday Script. From literature and poetry to life, music, and lyric analysis.",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Browse Categories | The Sunday Script",
-    description:
-      "Browse essays by category on The Sunday Script. From literature and poetry to life, music, and lyric analysis.",
-  },
-};
-
-const iconMap: Record<string, LucideIcon> = {
-  book: BookOpen,
-  leaf: Leaf,
-  coffee: Coffee,
-  brush: Brush,
-  feather: Feather,
-  sparkles: Sparkles,
 };
 
 type CategoryRow = {
@@ -43,93 +19,99 @@ type CategoryRow = {
 export default async function CategoriesPage() {
   const { data: categoriesRaw } = await supabase
     .from("categories")
-    .select(`
-      name,
-      slug,
-      icon,
-      description,
-      post_categories ( count )
-    `)
+    .select("name, slug, icon, description, post_categories ( count )")
     .order("name", { ascending: true });
 
-  const categories = ((categoriesRaw ?? []) as unknown as CategoryRow[]).map(
-    (cat) => ({
-      name: cat.name,
-      slug: cat.slug,
-      icon: cat.icon ?? "book",
-      description: cat.description ?? "",
-      count: cat.post_categories?.[0]?.count ?? 0,
-    })
-  );
+  const categories = ((categoriesRaw ?? []) as unknown as CategoryRow[]).map((cat) => ({
+    name: cat.name,
+    slug: cat.slug,
+    description: cat.description ?? "",
+    count: cat.post_categories?.[0]?.count ?? 0,
+    bg: "",
+  }));
 
   return (
-    <main className="pt-24 md:pt-32 pb-12 md:pb-24 px-4 md:px-8 lg:px-12 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-8 md:mb-14 text-center max-w-3xl mx-auto">
-        <p className="font-label uppercase tracking-widest text-sm text-on-surface-variant mb-2 md:mb-3">
-          The Library
-        </p>
-        <h1 className="text-3xl md:text-5xl lg:text-6xl font-headline italic text-on-surface mb-4 md:mb-6">
+    <main className="page-wrap" style={{ paddingTop: 64 }}>
+      <div style={{ padding: "4rem clamp(1.25rem,4vw,3.5rem) 3rem", maxWidth: 720, textAlign: "left" }}>
+        <span className="font-accent" style={{ fontSize: "1.2rem", color: "var(--color-primary)", display: "block", marginBottom: "0.4rem" }}>
+          the library
+        </span>
+        <h1
+          className="font-headline italic"
+          style={{ fontSize: "clamp(2.5rem,5vw,4rem)", color: "var(--color-on-surface)", fontWeight: 400, lineHeight: 1.1, marginBottom: "1rem" }}
+        >
           Browse by Category
         </h1>
-        <p className="text-base md:text-lg text-on-surface-variant font-body leading-relaxed">
-          Each category is a doorway into a different kind of thought. Pick one
-          and wander.
+        <p className="font-body font-light" style={{ fontSize: "0.95rem", color: "var(--color-on-surface-variant)", lineHeight: 1.8 }}>
+          Each category is a doorway into a different kind of thought. Pick one and wander.
         </p>
       </div>
 
-      {/* Empty state */}
       {categories.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 md:py-24 px-6 bg-surface-container-low rounded-xl border border-dashed border-outline-variant">
-          <BookOpen className="w-12 h-12 md:w-16 md:h-16 text-on-surface-variant mb-4" strokeWidth={1.5} />
-          <h2 className="text-2xl md:text-3xl font-headline italic tracking-tight mb-3">
-            The library is being curated
-          </h2>
-          <p className="text-on-surface-variant font-body text-center max-w-md text-sm md:text-base">
-            Categories will appear here once they&apos;re added from the admin
-            panel.
-          </p>
+        <div style={{ padding: "4rem clamp(1.25rem,4vw,3.5rem)", color: "var(--color-on-surface-variant)", fontStyle: "italic" }} className="font-body">
+          No categories yet.
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-          {categories.map((cat, index) => {
-            const Icon = iconMap[cat.icon] ?? BookOpen;
-            const isPink = index % 2 === 0;
-            const bgColor = isPink ? "bg-[#F3E8E6]" : "bg-[#E3E8E3]";
-            const iconColor = isPink ? "text-primary" : "text-secondary-container";
-
-            return (
-              <Link
-                key={cat.slug}
-                href={`/categories/${cat.slug}`}
-                className={`group relative ${bgColor} rounded-2xl p-5 md:p-7 lg:p-9 min-h-45 md:min-h-60 flex flex-col justify-between hover:scale-[1.02] hover:shadow-xl transition-all duration-500`}
-              >
-                <div className="flex justify-between items-start">
-                  <Icon
-                    className={`w-8 h-8 md:w-10 md:h-10 ${iconColor}`}
-                    strokeWidth={1.5}
-                  />
-                  <span className="font-label uppercase tracking-widest text-xs text-on-surface-variant">
-                    {cat.count} {cat.count === 1 ? "Essay" : "Essays"}
-                  </span>
-                </div>
-
-                <div>
-                  <h2 className="text-xl md:text-2xl lg:text-3xl font-headline tracking-tight mb-1 md:mb-2">
-                    {cat.name}
-                  </h2>
-                  {cat.description && (
-                    <p className="text-sm text-on-surface-variant font-body italic line-clamp-2">
-                      {cat.description}
-                    </p>
-                  )}
-                  <span className="inline-block mt-3 md:mt-4 font-label uppercase tracking-widest text-xs text-primary group-hover:underline">
-                    Explore →
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
+        <div style={{ padding: "0 clamp(1.25rem,4vw,3.5rem)", paddingBottom: "5rem" }}>
+          <div
+            className="bento-grid"
+            style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1rem" }}
+          >
+            {categories.map((cat, i) => {
+              const bg = i % 2 === 0 ? "#f0e6e3" : "#e0e6e0";
+              const tall = i === 0 || i === categories.length - 1;
+              return (
+                <Link
+                  key={cat.slug}
+                  href={`/categories/${cat.slug}`}
+                  className="cat-pill post-card"
+                  style={{
+                    background: bg,
+                    borderRadius: 16,
+                    padding: "2rem",
+                    minHeight: tall ? 300 : 220,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    border: "1px solid transparent",
+                    textDecoration: "none",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <span
+                      className="font-label font-semibold uppercase"
+                      style={{ fontSize: "0.65rem", letterSpacing: "0.1em", color: "var(--color-on-surface-variant)", background: "rgba(255,255,255,0.5)", borderRadius: 999, padding: "0.3rem 0.75rem" }}
+                    >
+                      {cat.count} {cat.count === 1 ? "essay" : "essays"}
+                    </span>
+                    <span className="font-body" style={{ fontSize: "0.75rem", color: "var(--color-primary)" }}>→</span>
+                  </div>
+                  <div>
+                    <h2
+                      className="font-headline"
+                      style={{ fontSize: "clamp(1.3rem,2vw,1.75rem)", color: "var(--color-on-surface)", lineHeight: 1.2, marginBottom: "0.5rem" }}
+                    >
+                      {cat.name}
+                    </h2>
+                    {cat.description && (
+                      <p
+                        className="font-body font-light italic"
+                        style={{ fontSize: "0.82rem", color: "var(--color-on-surface-variant)", lineHeight: 1.65 }}
+                      >
+                        {cat.description}
+                      </p>
+                    )}
+                    <span
+                      className="font-label font-medium uppercase"
+                      style={{ display: "inline-block", marginTop: "0.75rem", fontSize: "0.68rem", letterSpacing: "0.12em", color: "var(--color-primary)", borderBottom: "1px solid var(--color-primary-fixed)", paddingBottom: 1 }}
+                    >
+                      Explore
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
     </main>

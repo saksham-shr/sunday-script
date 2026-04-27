@@ -1,89 +1,76 @@
 import Link from "next/link";
-import { Mail, X } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="w-full py-10 md:py-16 px-4 md:px-8 mt-12 md:mt-20 bg-surface-container-low">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-400 mx-auto">
-
+    <footer
+      style={{
+        background: "var(--color-surface-container-low)",
+        borderTop: "1px solid var(--color-outline-variant)",
+        padding: "3.5rem clamp(1.25rem,4vw,3rem)",
+      }}
+    >
+      <div
+        className="footer-grid"
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "3rem", maxWidth: 1100, margin: "0 auto" }}
+      >
         {/* Brand */}
-        <div className="space-y-4 md:space-y-6">
-          <div className="text-xl font-headline font-bold text-on-surface">
+        <div>
+          <div
+            className="font-headline italic"
+            style={{ fontSize: "1.2rem", color: "var(--color-on-surface)", marginBottom: "0.75rem" }}
+          >
             The Sunday Script
           </div>
-          <p className="text-on-surface-variant font-body text-sm leading-relaxed max-w-xs">
-            Celebrating the slow beauty of literature and the intricate stories
-            that make us human. A sanctuary for the thoughtful mind.
+          <p
+            className="font-body"
+            style={{ fontSize: "0.85rem", color: "var(--color-on-surface-variant)", lineHeight: 1.7, maxWidth: 260 }}
+          >
+            Celebrating the slow beauty of literature and the intricate stories that make us human.
           </p>
         </div>
 
-        {/* Link Columns */}
-        <div className="grid grid-cols-2 gap-8">
-          <div className="space-y-3 md:space-y-4">
-            <h4 className="font-label text-xs font-bold uppercase tracking-[0.2em] text-on-surface">
+        {/* Links */}
+        <div style={{ display: "flex", gap: "3rem" }}>
+          <div>
+            <div
+              className="font-label font-semibold uppercase"
+              style={{ fontSize: "0.65rem", letterSpacing: "0.16em", color: "var(--color-on-surface)", marginBottom: "1rem" }}
+            >
               Explore
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/about" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
-                  About
+            </div>
+            {[
+              { href: "/about", label: "About" },
+              { href: "/blog", label: "Essays" },
+              { href: "/categories", label: "Categories" },
+            ].map(({ href, label }) => (
+              <div key={href} style={{ marginBottom: "0.5rem" }}>
+                <Link
+                  href={href}
+                  className="font-body hover:text-primary transition-colors"
+                  style={{ fontSize: "0.85rem", color: "var(--color-on-surface-variant)", textDecoration: "none" }}
+                >
+                  {label}
                 </Link>
-              </li>
-              <li>
-                <Link href="/categories" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
-                  Categories
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-3 md:space-y-4">
-            <h4 className="font-label text-xs font-bold uppercase tracking-[0.2em] text-on-surface">
-              Company
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/manifesto" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
-                  Manifesto
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
-                  Privacy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="text-on-surface-variant text-sm hover:text-primary transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-            </ul>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Socials + Copyright */}
-        <div className="space-y-4 md:space-y-6 flex flex-col items-start md:items-end">
-          <div className="flex gap-4">
-            <a
-              href="https://x.com/ShriparnaSharma"
-              className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
-              aria-label="Share"
-            >
-              <X className="w-4 h-4" />
-            </a>
-            <a
-              href="mailto:shriparnasharma2008@gmail.com"
-              className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors"
-              aria-label="Email"
-            >
-              <Mail className="w-4 h-4" />
-            </a>
+        {/* Sign-off */}
+        <div style={{ textAlign: "right" }}>
+          <div
+            className="font-accent"
+            style={{ fontSize: "1.5rem", color: "var(--color-primary)", marginBottom: "0.5rem" }}
+          >
+            See you Sunday.
           </div>
-          <p className="text-on-surface-variant text-xs md:text-right font-body">
-            © 2026 The Sunday Script. A digital sanctuary for life and literature.
+          <p
+            className="font-body"
+            style={{ fontSize: "0.75rem", color: "var(--color-on-surface-variant)" }}
+          >
+            © 2026 The Sunday Script
           </p>
         </div>
-
       </div>
     </footer>
   );

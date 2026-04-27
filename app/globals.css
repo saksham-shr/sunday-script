@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
-  --color-surface: #f9f9f6;
-  --color-surface-container-low: #f4f4f1;
+  /* Colors — matched to design tokens */
+  --color-surface: #f9f4ee;
+  --color-surface-container-low: #f2ece4;
   --color-surface-container-lowest: #ffffff;
   --color-surface-container: #eeeeeb;
   --color-surface-container-high: #e8e8e5;
@@ -12,13 +12,14 @@
   --color-primary-container: #c68774;
   --color-primary-fixed: #ffdbd0;
   --color-on-primary: #ffffff;
-  --color-on-surface: #1a1c1b;
-  --color-on-surface-variant: #52443f;
-  --color-secondary-container: #dce1dc;
+  --color-on-surface: #1a1510;
+  --color-on-surface-variant: #6b5a54;
+  --color-secondary-container: #e0e6e0;
   --color-outline-variant: #d7c2bc;
+  --color-rose: #f0e6e3;
 
   /* Font Families */
-  --font-headline: "Noto Serif", serif;
+  --font-headline: "Playfair Display", serif;
   --font-body: "Inter", sans-serif;
   --font-label: "Be Vietnam Pro", sans-serif;
   --font-accent: "Caveat", cursive;
@@ -35,10 +36,90 @@ body {
   background-color: var(--color-surface);
   color: var(--color-on-surface);
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-headline);
+}
+
+/* ── Interaction helpers ── */
+.post-card {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+.post-card:hover {
+  box-shadow: 0 12px 40px rgba(134, 81, 64, 0.11);
+  transform: translateY(-2px);
+}
+.cat-pill { transition: all 0.25s ease; }
+.cat-scroll { scrollbar-width: none; }
+.cat-scroll::-webkit-scrollbar { display: none; }
+.img-zoom { overflow: hidden; }
+.img-zoom > div,
+.img-zoom > span { transition: transform 0.55s ease; }
+.img-zoom:hover > div,
+.img-zoom:hover > span { transform: scale(1.04); }
+
+/* Page fade-in */
+.page-wrap { animation: fadeUp 0.3s ease both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #f9f4ee; }
+::-webkit-scrollbar-thumb { background: #d7c2bc; border-radius: 2px; }
+
+/* Responsive layout helpers */
+@media (max-width: 900px) {
+  .hero-grid   { grid-template-columns: 1fr !important; gap: 3rem !important; }
+  .about-grid  { grid-template-columns: 1fr !important; gap: 3rem !important; }
+  .footer-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+  .bento-grid  { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 640px) {
+  .posts-grid  { grid-template-columns: 1fr !important; }
+  .bento-grid  { grid-template-columns: 1fr !important; }
+  .featured-card { flex-direction: column !important; }
+  .featured-card > div:first-child { width: 100% !important; min-height: 180px !important; }
+}
+
+/* ── Blog prose styles ── */
+.blog-content {
+  line-height: 1.9;
+  font-size: 1.05rem;
+  color: #2a201a;
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+}
+.blog-content p + p { margin-top: 1.4em; }
+.blog-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.6rem;
+  color: #1a1510;
+  margin: 2rem 0 0.75rem;
+}
+.blog-content blockquote {
+  border-left: 3px solid #865140;
+  padding: 0.5rem 0 0.5rem 1.25rem;
+  font-style: italic;
+  color: #6b5a54;
+  margin: 1.75rem 0;
+  font-size: 1.05rem;
+}
+.blog-content a { color: #865140; }
+.blog-content ul { padding-left: 1.5rem; list-style: disc; }
+.blog-content ol { padding-left: 1.5rem; list-style: decimal; }
+.blog-content li > p { margin: 0; }
+.blog-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
 }
 
 /* ====== TIPTAP EDITOR STYLES ====== */

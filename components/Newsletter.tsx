@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Loader2, Mail } from "lucide-react";
 import { subscribeToNewsletter } from "@/app/actions/newsletter";
 
 type Status = "idle" | "loading" | "success" | "already" | "error";
@@ -13,122 +12,101 @@ export default function Newsletter() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
-    // Guard: don't fire while a request is in flight
-    if (status === "loading") return;
-
-    // Guard: don't re-fire after success/already
-    if (status === "success" || status === "already") return;
-
+    if (status === "loading" || status === "success" || status === "already") return;
     setStatus("loading");
     setErrorMessage("");
-
     const result = await subscribeToNewsletter(email);
-
-    if (result.status === "success") {
-      setStatus("success");
-      setEmail("");
-    } else if (result.status === "already") {
-      setStatus("already");
-    } else {
-      setStatus("error");
-      setErrorMessage(result.message);
-    }
+    if (result.status === "success") { setStatus("success"); setEmail(""); }
+    else if (result.status === "already") { setStatus("already"); }
+    else { setStatus("error"); setErrorMessage(result.message); }
   }
 
-  // Button label + icon change based on status
-  const buttonContent = () => {
-    switch (status) {
-      case "loading":
-        return (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Joining...
-          </>
-        );
-      case "success":
-        return (
-          <>
-            <CheckCircle2 className="w-4 h-4" />
-            Subscribed
-          </>
-        );
-      case "already":
-        return (
-          <>
-            <Mail className="w-4 h-4" />
-            Already Subscribed
-          </>
-        );
-      default:
-        return "Join the Circle";
-    }
-  };
-
-  const isLocked =
-    status === "loading" || status === "success" || status === "already";
-
   return (
-    <section className="relative overflow-hidden bg-surface-container-low rounded-xl px-4 py-10 md:p-12 lg:p-20 mb-12 md:mb-20 lg:mb-32 mx-4 md:mx-8 lg:mx-12 flex flex-col items-center text-center">
-      {/* Decorative blur blobs */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-primary-fixed opacity-20 blur-3xl -mr-32 -mt-32"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary-container opacity-20 blur-3xl -ml-32 -mb-32"></div>
+    <section
+      style={{ margin: "0 clamp(1.25rem,4vw,3.5rem) 5rem", borderRadius: 20, overflow: "hidden", position: "relative" }}
+    >
+      <div
+        style={{ background: "var(--color-primary)", padding: "4rem clamp(1.5rem,5vw,5rem)", position: "relative", overflow: "hidden" }}
+      >
+        {/* Decorative circles */}
+        <div style={{ position: "absolute", top: -60, right: -60, width: 240, height: 240, borderRadius: "50%", background: "rgba(255,219,208,0.12)" }} />
+        <div style={{ position: "absolute", bottom: -40, left: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,219,208,0.08)" }} />
 
-      {/* Content */}
-      <div className="relative z-10 max-w-2xl space-y-8">
-        <span className="font-label text-sm font-bold uppercase tracking-widest text-on-surface-variant">
-          Weekly Muse
-        </span>
-
-        <h2 className="text-2xl md:text-4xl lg:text-5xl font-headline italic">
-          A Sunday morning invitation.
-        </h2>
-
-        <p className="text-on-surface-variant font-body italic">
-          Receive our most thoughtful essays and book recommendations directly
-          in your inbox every Sunday morning.
-        </p>
-
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row gap-4 w-full"
-        >
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLocked}
-            placeholder="Enter your email address"
-            className="flex-grow bg-surface-container-lowest border-none rounded-xl px-6 py-4 focus:ring-2 focus:ring-primary/20 focus:outline-none placeholder:font-label placeholder:text-on-surface-variant text-sm disabled:opacity-60"
-          />
-          <button
-            type="submit"
-            disabled={isLocked}
-            className="flex items-center justify-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-xl font-label text-sm uppercase tracking-widest hover:bg-primary-container transition-colors shadow-lg whitespace-nowrap disabled:opacity-80 disabled:cursor-not-allowed"
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 580, margin: "0 auto", textAlign: "center" }}>
+          <span
+            className="font-label font-semibold uppercase"
+            style={{ fontSize: "0.65rem", letterSpacing: "0.2em", color: "rgba(255,219,208,0.7)", display: "block", marginBottom: "1rem" }}
           >
-            {buttonContent()}
-          </button>
-        </form>
-
-        {/* Error message */}
-        {status === "error" && (
-          <p className="text-sm text-red-600 font-body">{errorMessage}</p>
-        )}
-
-        {/* Success message */}
-        {status === "success" && (
-          <p className="text-sm text-primary font-body italic">
-            Welcome to the circle. Check your inbox on Sunday. ✨
+            Weekly Muse
+          </span>
+          <h2
+            className="font-accent"
+            style={{ fontSize: "clamp(2.2rem,4vw,3.5rem)", color: "white", lineHeight: 1.2, marginBottom: "1rem", fontWeight: 600 }}
+          >
+            A Sunday morning invitation.
+          </h2>
+          <p
+            className="font-body font-light"
+            style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.75)", lineHeight: 1.75, marginBottom: "2rem" }}
+          >
+            Receive our most thoughtful essays and book recommendations directly in your inbox every Sunday morning.
           </p>
-        )}
 
-        {/* Already subscribed message */}
-        {status === "already" && (
-          <p className="text-sm text-on-surface-variant font-body italic">
-            You&apos;re already part of the circle. See you Sunday.
-          </p>
-        )}
+          {status === "success" || status === "already" ? (
+            <div className="font-accent" style={{ fontSize: "1.5rem", color: "var(--color-primary-fixed)" }}>
+              {status === "success"
+                ? "Welcome to the circle. See you Sunday. ✨"
+                : "You're already part of the circle. See you Sunday."}
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "center" }}>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={status === "loading"}
+                placeholder="your@email.com"
+                style={{
+                  flex: "1 1 240px",
+                  background: "rgba(255,255,255,0.12)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 999,
+                  padding: "0.85rem 1.5rem",
+                  color: "white",
+                  fontFamily: "var(--font-body)",
+                  fontSize: "0.9rem",
+                  outline: "none",
+                }}
+              />
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="font-label font-medium uppercase hover:bg-primary-fixed transition-colors"
+                style={{
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.12em",
+                  color: "var(--color-primary)",
+                  background: "white",
+                  border: "none",
+                  borderRadius: 999,
+                  padding: "0.85rem 2rem",
+                  cursor: "pointer",
+                  flexShrink: 0,
+                  opacity: status === "loading" ? 0.8 : 1,
+                }}
+              >
+                {status === "loading" ? "Joining..." : "Join the Circle"}
+              </button>
+            </form>
+          )}
+
+          {status === "error" && (
+            <p className="font-body" style={{ marginTop: "0.75rem", fontSize: "0.85rem", color: "rgba(255,200,180,0.9)" }}>
+              {errorMessage}
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );

@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Noto_Serif, Inter, Caveat, Be_Vietnam_Pro } from "next/font/google";
+import { Playfair_Display, Inter, Caveat, Be_Vietnam_Pro } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const BASE_URL = "https://thesundayscript.blog";
 
-const notoSerif = Noto_Serif({
+const playfairDisplay = Playfair_Display({
   variable: "--font-headline",
   subsets: ["latin"],
   weight: ["400", "700"],
+  style: ["normal", "italic"],
 });
 
 const inter = Inter({
@@ -107,24 +109,30 @@ const websiteSchema = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const isAdmin = pathname.startsWith("/admin") || pathname.startsWith("/collaborator");
+
   return (
     <html
       lang="en"
-      className={`${notoSerif.variable} ${inter.variable} ${caveat.variable} ${beVietnamPro.variable}`}
+      className={`${playfairDisplay.variable} ${inter.variable} ${caveat.variable} ${beVietnamPro.variable}`}
     >
       <body className="min-h-screen flex flex-col bg-surface text-on-surface">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-        />
-        <Navbar />
+        {!isAdmin && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+          />
+        )}
+        {!isAdmin && <Navbar />}
         {children}
-        <Footer />
+        {!isAdmin && <Footer />}
       </body>
     </html>
   );

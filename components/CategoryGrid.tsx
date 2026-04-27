@@ -1,12 +1,8 @@
-"use client";
-
-import { useCallback } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
-import CategoryCard from "./CategoryCard";
+import Link from "next/link";
 
 type Category = {
   name: string;
+  slug: string;
   count: number;
   icon: string;
 };
@@ -16,82 +12,78 @@ type CategoryGridProps = {
 };
 
 export default function CategoryGrid({ categories }: CategoryGridProps) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    loop: false,
-    duration: 20,
-  });
-
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-
-  const showArrows = categories.length > 4;
+  if (categories.length === 0) return null;
 
   return (
-    <section className="py-10 md:py-16 px-4 md:px-8 lg:px-12 bg-surface-container-low">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-end justify-between mb-6 md:mb-10">
-          <div>
-            <p className="font-label uppercase tracking-widest text-sm text-on-surface-variant mb-2">
-              The Library
-            </p>
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-headline tracking-tight">
-              Explore by Category
-            </h2>
-          </div>
+    <section style={{ padding: "0 clamp(1.25rem,4vw,3.5rem)", marginBottom: "5rem" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+        <div>
+          <span className="font-accent" style={{ fontSize: "1.2rem", color: "var(--color-primary)", display: "block", marginBottom: "0.25rem" }}>
+            explore by theme
+          </span>
+          <h2
+            className="font-headline"
+            style={{ fontSize: "clamp(1.6rem,2.5vw,2.25rem)", color: "var(--color-on-surface)", fontWeight: 400 }}
+          >
+            Categories
+          </h2>
         </div>
+        <Link
+          href="/categories"
+          className="font-label font-medium uppercase"
+          style={{
+            fontSize: "0.68rem",
+            letterSpacing: "0.14em",
+            color: "var(--color-primary)",
+            background: "none",
+            border: "1px solid var(--color-outline-variant)",
+            borderRadius: 999,
+            padding: "0.45rem 1rem",
+            textDecoration: "none",
+          }}
+        >
+          View all
+        </Link>
+      </div>
 
-        {/* EMPTY STATE */}
-        {categories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 px-6 bg-surface rounded-lg border border-dashed border-outline-variant">
-            <BookOpen className="w-12 h-12 text-on-surface-variant mb-4" strokeWidth={1.5} />
-            <h3 className="text-2xl font-headline tracking-tight mb-2">
-              The library is being curated
-            </h3>
-            <p className="text-on-surface-variant font-body text-center max-w-md">
-              Categories will appear here once they&apos;re added from the admin panel.
-            </p>
-          </div>
-        ) : (
-          <div className="relative">
-            <div className="overflow-hidden" ref={emblaRef}>
-              <div className="flex gap-6">
-                {categories.map((category, index) => (
-                  <div
-                    key={category.name}
-                    className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_25%] min-w-0"
-                  >
-                    <CategoryCard
-                      name={category.name}
-                      count={category.count}
-                      icon={category.icon}
-                      variant={index % 2 === 0 ? "pink" : "sage"}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {showArrows && (
-              <>
-                <button
-                  onClick={scrollPrev}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 rounded-full bg-surface shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
-                  aria-label="Previous"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={scrollNext}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 rounded-full bg-surface shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
-                  aria-label="Next"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </>
-            )}
-          </div>
-        )}
+      <div className="cat-scroll" style={{ display: "flex", gap: "0.75rem", overflowX: "auto", paddingBottom: "0.5rem" }}>
+        {categories.map((cat, i) => {
+          const bg = i % 2 === 0 ? "#f0e6e3" : "#e0e6e0";
+          return (
+            <Link
+              key={cat.slug}
+              href={`/categories/${cat.slug}`}
+              className="cat-pill"
+              style={{
+                flexShrink: 0,
+                background: bg,
+                border: "none",
+                borderRadius: 999,
+                padding: "0.65rem 1.4rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.6rem",
+                textDecoration: "none",
+              }}
+            >
+              <span className="font-headline" style={{ fontSize: "0.95rem", color: "var(--color-on-surface)" }}>
+                {cat.name}
+              </span>
+              <span
+                className="font-body"
+                style={{
+                  fontSize: "0.65rem",
+                  color: "var(--color-on-surface-variant)",
+                  background: "rgba(0,0,0,0.06)",
+                  borderRadius: 999,
+                  padding: "0.1rem 0.5rem",
+                }}
+              >
+                {cat.count}
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

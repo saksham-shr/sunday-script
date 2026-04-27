@@ -62,7 +62,7 @@ export default function CollaborateModal({
     setLoading(true);
     setErrorMsg("");
 
-    const result = await submitCollaboration({ name, email, phone, reason });
+    const result = await submitCollaboration({ name, email, phone, reason: reason });
 
     if (result.status === "success") {
       setResultState("success");
@@ -246,6 +246,18 @@ export default function CollaborateModal({
                   "Submit Request"
                 )}
               </button>
+
+              {/* Already a collaborator */}
+              <div className="pt-2 text-center border-t border-outline-variant mt-2">
+                <p className="text-xs text-on-surface-variant font-body mb-2">Already an approved collaborator?</p>
+                <a
+                  href="/collaborator/login"
+                  onClick={onClose}
+                  className="inline-block font-label text-xs uppercase tracking-widest text-primary border border-outline-variant rounded-full px-5 py-2 hover:bg-primary hover:text-on-primary hover:border-primary transition-colors"
+                >
+                  Sign in to write →
+                </a>
+              </div>
             </form>
           </>
         )}

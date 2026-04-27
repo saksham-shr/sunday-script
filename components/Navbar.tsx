@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import CollaborateModal from "./CollaborateModal";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
+  { href: "/blog", label: "Essays" },
   { href: "/categories", label: "Categories" },
+  { href: "/about", label: "About" },
 ];
 
 export default function Navbar() {
@@ -20,27 +20,38 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[92%] max-w-7xl z-50 rounded-full px-4 md:px-8 py-3 bg-surface/80 backdrop-blur-[12px] flex justify-between items-center shadow-sm">
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between border-b"
+        style={{
+          padding: "0 clamp(1.25rem,4vw,3rem)",
+          background: "rgba(249,244,238,0.93)",
+          backdropFilter: "blur(14px)",
+          borderColor: "rgba(215,194,188,0.45)",
+        }}
+      >
         <Link
           href="/"
-          className="text-base md:text-2xl font-headline font-bold text-on-surface whitespace-nowrap"
+          className="font-headline italic text-xl text-on-surface"
         >
           The Sunday Script
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* Desktop nav links */}
+        <div className="hidden md:flex items-center gap-9">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-label text-xs uppercase tracking-widest transition-colors ${
-                  isActive
-                    ? "text-primary border-b-2 border-primary-fixed"
-                    : "text-on-surface-variant hover:text-primary"
-                }`}
+                className="font-label font-medium uppercase transition-colors"
+                style={{
+                  fontSize: "0.68rem",
+                  letterSpacing: "0.14em",
+                  color: isActive ? "var(--color-primary)" : "var(--color-on-surface-variant)",
+                  borderBottom: `1.5px solid ${isActive ? "var(--color-primary)" : "transparent"}`,
+                  paddingBottom: 2,
+                }}
               >
                 {link.label}
               </Link>
@@ -48,28 +59,12 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Action Buttons Container */}
-        <div className="flex items-center gap-2 md:gap-4">
-          {/* Buy Me A Chai Button — hidden on very small screens */}
-          <a
-            href="https://buymeachai.ezee.li/thesundayscript"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:block shrink-0"
-          >
-            <Image
-              src="https://buymeachai.ezee.li/assets/images/buymeachai-button.png"
-              alt="Buy Me A Chai"
-              width={200}
-              height={56}
-              className="h-8 md:h-10 w-auto transition-transform hover:scale-105 active:scale-95"
-            />
-          </a>
-
-          {/* Collaborate Button — desktop only */}
+        <div className="flex items-center gap-3">
+          {/* Collaborate — desktop only */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="hidden md:block bg-primary text-on-primary px-6 py-2 rounded-full font-label text-sm uppercase tracking-widest hover:bg-primary-container transition-colors whitespace-nowrap"
+            className="hidden md:block bg-primary text-on-primary rounded-full font-label font-medium uppercase transition-colors hover:bg-primary-container"
+            style={{ fontSize: "0.68rem", letterSpacing: "0.12em", padding: "0.5rem 1.25rem" }}
           >
             Collaborate
           </button>
@@ -85,35 +80,34 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Side Drawer Overlay */}
+      {/* Mobile drawer overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-[60] md:hidden"
+          className="fixed inset-0 bg-black/35 z-[60] md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
-      {/* Mobile Side Drawer */}
+      {/* Mobile drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-72 max-w-[80vw] bg-surface z-[70] shadow-2xl flex flex-col transition-transform duration-300 ease-in-out md:hidden ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className="fixed top-0 right-0 h-full bg-surface z-[70] shadow-2xl flex flex-col transition-transform duration-300 ease-in-out md:hidden"
+        style={{
+          width: 280,
+          transform: isMobileMenuOpen ? "translateX(0)" : "translateX(100%)",
+          transitionTimingFunction: "cubic-bezier(0.4,0,0.2,1)",
+        }}
       >
-        {/* Drawer Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-outline-variant">
-          <span className="font-headline font-bold text-lg text-on-surface">
-            The Sunday Script
-          </span>
+          <span className="font-headline italic text-lg text-on-surface">Menu</span>
           <button
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-1 text-on-surface-variant hover:text-on-surface"
+            className="p-1 text-on-surface-variant"
             aria-label="Close menu"
           >
-            <X className="w-5 h-5" />
+            <X className="w-[18px] h-[18px]" />
           </button>
         </div>
 
-        {/* Nav Links */}
         <nav className="flex flex-col gap-1 px-4 py-6">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -122,11 +116,13 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`font-label text-sm uppercase tracking-widest px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? "text-primary bg-primary-fixed/20"
-                    : "text-on-surface-variant hover:text-primary hover:bg-primary-fixed/10"
-                }`}
+                className="px-4 py-[0.85rem] rounded-lg font-label font-medium uppercase transition-colors"
+                style={{
+                  fontSize: "0.75rem",
+                  letterSpacing: "0.12em",
+                  color: isActive ? "var(--color-primary)" : "var(--color-on-surface-variant)",
+                  background: isActive ? "#f0e6e3" : "transparent",
+                }}
               >
                 {link.label}
               </Link>
@@ -134,38 +130,18 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Drawer Footer Actions */}
-        <div className="mt-auto px-6 py-6 border-t border-outline-variant flex flex-col gap-4">
-          <a
-            href="https://buymeachai.ezee.li/thesundayscript"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex justify-center"
-          >
-            <Image
-              src="https://buymeachai.ezee.li/assets/images/buymeachai-button.png"
-              alt="Buy Me A Chai"
-              width={200}
-              height={56}
-              className="h-10 w-auto"
-            />
-          </a>
+        <div className="mt-auto px-6 py-6 border-t border-outline-variant">
           <button
-            onClick={() => {
-              setIsMobileMenuOpen(false);
-              setIsModalOpen(true);
-            }}
-            className="w-full bg-primary text-on-primary px-6 py-3 rounded-full font-label text-sm uppercase tracking-widest hover:bg-primary-container transition-colors"
+            onClick={() => { setIsMobileMenuOpen(false); setIsModalOpen(true); }}
+            className="w-full bg-primary text-on-primary rounded-full font-label font-medium uppercase hover:bg-primary-container transition-colors"
+            style={{ fontSize: "0.75rem", letterSpacing: "0.12em", padding: "0.85rem" }}
           >
             Collaborate
           </button>
         </div>
       </div>
 
-      <CollaborateModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      <CollaborateModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 }
