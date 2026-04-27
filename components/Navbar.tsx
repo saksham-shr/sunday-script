@@ -60,6 +60,22 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Buy me a chai — desktop only */}
+          <a
+            href="https://buymeachai.ezee.li/thesundayscript"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:block font-label font-medium uppercase transition-colors"
+            style={{
+              fontSize: "0.68rem", letterSpacing: "0.12em",
+              color: "var(--color-on-surface-variant)",
+              border: "1px solid rgba(215,194,188,0.7)",
+              borderRadius: 999, padding: "0.5rem 1.1rem",
+            }}
+          >
+            ☕ Buy me a chai
+          </a>
+
           {/* Collaborate — desktop only */}
           <button
             onClick={() => setIsModalOpen(true)}
@@ -130,7 +146,21 @@ export default function Navbar() {
           })}
         </nav>
 
-        <div className="mt-auto px-6 py-6 border-t border-outline-variant">
+        <div className="mt-auto px-6 py-6 border-t border-outline-variant flex flex-col gap-3">
+          <a
+            href="https://buymeachai.ezee.li/thesundayscript"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="w-full text-center rounded-full font-label font-medium uppercase transition-colors"
+            style={{
+              fontSize: "0.75rem", letterSpacing: "0.12em", padding: "0.85rem",
+              border: "1px solid rgba(215,194,188,0.8)",
+              color: "var(--color-on-surface-variant)",
+            }}
+          >
+            ☕ Buy me a chai
+          </a>
           <button
             onClick={() => { setIsMobileMenuOpen(false); setIsModalOpen(true); }}
             className="w-full bg-primary text-on-primary rounded-full font-label font-medium uppercase hover:bg-primary-container transition-colors"
