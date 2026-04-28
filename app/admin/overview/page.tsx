@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { supabaseBrowser as supabase } from "@/lib/supabase-browser";
 import AdminShell from "@/app/admin/_components/AdminShell";
 import { ToastProvider } from "@/app/admin/_components/Toast";
 

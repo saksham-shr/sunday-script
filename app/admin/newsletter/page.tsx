@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabaseBrowser as supabase } from "@/lib/supabase-browser";
 import AdminShell from "@/app/admin/_components/AdminShell";
 import { ToastProvider, useToast } from "@/app/admin/_components/Toast";
 
