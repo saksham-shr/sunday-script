@@ -9,6 +9,8 @@ type Comment = {
   author_name: string;
   created_at: string;
   content: string;
+  parent_id: string | null;
+  is_admin_reply: boolean;
 };
 
 type CommentSectionProps = {
@@ -59,6 +61,18 @@ export default function CommentSection({
       })
       .toUpperCase();
 
+  // Separate top-level comments from admin replies
+  const topLevel = comments.filter((c) => !c.parent_id);
+  const repliesMap: Record<string, Comment[]> = {};
+  comments
+    .filter((c) => c.parent_id)
+    .forEach((r) => {
+      if (!repliesMap[r.parent_id!]) repliesMap[r.parent_id!] = [];
+      repliesMap[r.parent_id!].push(r);
+    });
+
+  const topLevelCount = topLevel.length;
+
   return (
     <section id="comments" className="mt-12 md:mt-20 max-w-3xl mx-auto">
       <div className="flex items-end justify-between mb-6 md:mb-10">
@@ -66,13 +80,13 @@ export default function CommentSection({
           Voices from the Pages
         </h2>
         <span className="font-label uppercase tracking-widest text-xs text-on-surface-variant">
-          {comments.length}{" "}
-          {comments.length === 1 ? "Reflection" : "Reflections"}
+          {topLevelCount}{" "}
+          {topLevelCount === 1 ? "Reflection" : "Reflections"}
         </span>
       </div>
 
       {/* Comments list */}
-      {comments.length === 0 ? (
+      {topLevel.length === 0 ? (
         <div className="mb-8 md:mb-12 py-8 px-4 md:px-6 bg-surface-container-low rounded-2xl text-center border border-dashed border-outline-variant">
           <p className="font-body italic text-on-surface-variant">
             Be the first to leave a reflection.
@@ -80,41 +94,68 @@ export default function CommentSection({
         </div>
       ) : (
         <div className="space-y-3 mb-8 md:mb-12">
-          {comments.map((c) => (
-            <article
-              key={c.id}
-              className="bg-surface-container-lowest rounded-2xl p-4 md:p-6 lg:p-8"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-primary-fixed/40 flex items-center justify-center font-headline text-primary font-bold text-sm">
-                  {c.author_name.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <p className="font-headline font-semibold text-on-surface text-sm md:text-base">
-                    {c.author_name}
+          {topLevel.map((c) => {
+            const replies = repliesMap[c.id] ?? [];
+            return (
+              <div key={c.id}>
+                {/* Reader comment */}
+                <article className="bg-surface-container-lowest rounded-2xl p-4 md:p-6 lg:p-8">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-primary-fixed/40 flex items-center justify-center font-headline text-primary font-bold text-sm">
+                      {c.author_name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-headline font-semibold text-on-surface text-sm md:text-base">
+                        {c.author_name}
+                      </p>
+                      <p className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant">
+                        {formatDate(c.created_at)}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-on-surface-variant font-body text-sm leading-relaxed whitespace-pre-wrap">
+                    {c.content}
                   </p>
-                  <p className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant">
-                    {formatDate(c.created_at)}
-                  </p>
-                </div>
+                </article>
+
+                {/* Admin replies — indented below */}
+                {replies.map((r) => (
+                  <div key={r.id} className="ml-6 md:ml-10 mt-2">
+                    <article className="bg-primary-fixed/10 border-l-2 border-primary rounded-r-2xl rounded-bl-2xl p-4 md:p-5">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center font-headline text-on-primary font-bold text-xs">
+                          S
+                        </div>
+                        <div>
+                          <p className="font-headline font-semibold text-primary text-sm">
+                            {r.author_name}
+                            <span className="ml-2 font-label text-[9px] uppercase tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                              Author
+                            </span>
+                          </p>
+                          <p className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant">
+                            {formatDate(r.created_at)}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-on-surface font-body text-sm leading-relaxed whitespace-pre-wrap">
+                        {r.content}
+                      </p>
+                    </article>
+                  </div>
+                ))}
               </div>
-              <p className="text-on-surface-variant font-body text-sm leading-relaxed whitespace-pre-wrap">
-                {c.content}
-              </p>
-            </article>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {/* Form / success message */}
+      {/* Submission form */}
       <div className="bg-surface-container-low rounded-2xl p-5 md:p-8 lg:p-10">
         {status === "success" ? (
           <div className="text-center py-6 space-y-4">
             <div className="w-14 h-14 mx-auto rounded-full bg-primary-fixed/40 flex items-center justify-center">
-              <CheckCircle2
-                className="w-7 h-7 text-primary"
-                strokeWidth={1.5}
-              />
+              <CheckCircle2 className="w-7 h-7 text-primary" strokeWidth={1.5} />
             </div>
             <h3 className="text-xl md:text-2xl font-headline italic text-on-surface">
               Thanks for your reflection

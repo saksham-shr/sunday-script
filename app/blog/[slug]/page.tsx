@@ -35,6 +35,8 @@ type CommentRow = {
   author_name: string;
   content: string;
   created_at: string;
+  parent_id: string | null;
+  is_admin_reply: boolean;
 };
 
 function calculateReadingTime(html: string): number {
@@ -146,7 +148,7 @@ export default async function BlogDetailPage({
 
   const { data: commentsRaw } = await supabase
     .from("comments")
-    .select("id, author_name, content, created_at")
+    .select("id, author_name, content, created_at, parent_id, is_admin_reply")
     .eq("post_id", post.id)
     .eq("status", "approved")
     .order("created_at", { ascending: true });
