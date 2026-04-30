@@ -21,7 +21,7 @@ export async function subscribeToNewsletter(
   // 2. Try to insert. If the email exists, the UNIQUE constraint throws.
   const { error } = await supabase
     .from("subscribers")
-    .insert({ email: trimmed });
+    .insert({ email: trimmed, confirmed: true });
 
   if (error) {
     // Postgres error code 23505 = unique_violation

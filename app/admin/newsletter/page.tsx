@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { supabaseBrowser as supabase } from "@/lib/supabase-browser";
 import AdminShell from "@/app/admin/_components/AdminShell";
 import { ToastProvider, useToast } from "@/app/admin/_components/Toast";
+import { sendNewsletter } from "@/app/actions/send-newsletter";
 
 type Subscriber = { id: string; email: string; confirmed: boolean; created_at: string };
-type Post = { title: string; excerpt: string | null };
+type Post = { title: string; excerpt: string | null; slug: string };
 
 function NewsletterContent() {
   const toast = useToast();
@@ -18,12 +19,13 @@ function NewsletterContent() {
   );
   const [includeLatest, setIncludeLatest] = useState(true);
   const [confirm, setConfirm] = useState(false);
+  const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       supabase.from("subscribers").select("id, email, confirmed, created_at").order("created_at", { ascending: false }),
-      supabase.from("posts").select("title, excerpt").eq("status", "published").order("published_at", { ascending: false }).limit(1).maybeSingle(),
+      supabase.from("posts").select("title, excerpt, slug").eq("status", "published").order("published_at", { ascending: false }).limit(1).maybeSingle(),
     ]).then(([{ data: subs }, { data: post }]) => {
       setSubscribers((subs as Subscriber[]) ?? []);
       setLatest(post as Post | null);
@@ -44,6 +46,29 @@ function NewsletterContent() {
     await supabase.from("subscribers").delete().eq("id", id);
     setSubscribers((prev) => prev.filter((s) => s.id !== id));
     toast(`${email} removed.`);
+  }
+
+  async function confirmSubscriber(id: string, email: string) {
+    const { error } = await supabase.from("subscribers").update({ confirmed: true }).eq("id", id);
+    if (error) { toast("Failed to confirm subscriber."); return; }
+    setSubscribers((prev) => prev.map((s) => s.id === id ? { ...s, confirmed: true } : s));
+    toast(`${email} confirmed.`, "success");
+  }
+
+  async function handleSend() {
+    setSending(true);
+    setConfirm(false);
+    const result = await sendNewsletter({
+      subject,
+      body,
+      latestPost: includeLatest && latest ? latest : null,
+    });
+    setSending(false);
+    if (result.ok) {
+      toast(`Newsletter sent to ${result.sent} subscriber${result.sent !== 1 ? "s" : ""}.`, "success");
+    } else {
+      toast(`Send failed: ${result.error}`, "error" as never);
+    }
   }
 
   function fmtDate(iso: string) {
@@ -68,7 +93,7 @@ function NewsletterContent() {
           <h2 className="a-section__title">
             Subscribers
             <span style={{ fontFamily: "var(--a-mono)", fontSize: 14, color: "var(--muted)", marginLeft: 8 }}>
-              · {subscribers.length}
+              · {subscribers.length} total · {active.length} confirmed
             </span>
           </h2>
           <button className="a-btn a-btn--ghost a-btn--sm" onClick={exportCSV}>↓ Export CSV</button>
@@ -92,7 +117,12 @@ function NewsletterContent() {
                       {s.confirmed ? "Confirmed" : "Unconfirmed"}
                     </span>
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td style={{ textAlign: "right", display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                    {!s.confirmed && (
+                      <button className="a-tbl__action" onClick={() => confirmSubscriber(s.id, s.email)}>
+                        Confirm
+                      </button>
+                    )}
                     <button className="a-tbl__action a-tbl__action--danger" onClick={() => removeSubscriber(s.id, s.email)}>
                       Remove
                     </button>
@@ -138,9 +168,9 @@ function NewsletterContent() {
               className="a-btn a-btn--primary a-btn--lg"
               style={{ marginTop: 18 }}
               onClick={() => setConfirm(true)}
-              disabled={active.length === 0}
+              disabled={active.length === 0 || sending}
             >
-              Send to {active.length} subscriber{active.length !== 1 ? "s" : ""} →
+              {sending ? "Sending…" : `Send to ${active.length} subscriber${active.length !== 1 ? "s" : ""} →`}
             </button>
             {active.length === 0 && !loading && (
               <p style={{ marginTop: 8, fontSize: 12, color: "var(--muted)" }}>No confirmed subscribers yet.</p>
@@ -173,10 +203,10 @@ function NewsletterContent() {
         <div className="a-confirm-overlay" onClick={() => setConfirm(false)}>
           <div className="a-confirm" onClick={(e) => e.stopPropagation()}>
             <h3>Send to {active.length} readers?</h3>
-            <p>The letter will go out within the hour. You won&apos;t be able to unsend.</p>
+            <p>The letter will go out now. You won&apos;t be able to unsend.</p>
             <div className="a-confirm__actions">
               <button className="a-btn a-btn--ghost a-btn--sm" onClick={() => setConfirm(false)}>Cancel</button>
-              <button className="a-btn a-btn--primary a-btn--sm" onClick={() => { setConfirm(false); toast("Newsletter sent to all subscribers.", "success"); }}>
+              <button className="a-btn a-btn--primary a-btn--sm" onClick={handleSend}>
                 Send the letter
               </button>
             </div>

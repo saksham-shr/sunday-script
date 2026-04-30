@@ -8,61 +8,45 @@ const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-type Step = "email" | "otp";
+type Step = "login" | "forgot";
 
 export default function CollaboratorLoginPage() {
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<Step>("email");
+  const [password, setPassword] = useState("");
+  const [step, setStep] = useState<Step>("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
-  async function sendOtp(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
     setLoading(true);
     setError("");
 
-    const { error: otpError } = await supabase.auth.signInWithOtp({
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email: email.trim().toLowerCase(),
-      options: { shouldCreateUser: true },
+      password,
     });
 
-    setLoading(false);
-    if (otpError) setError(otpError.message);
-    else setStep("otp");
-  }
-
-  async function verifyOtp(e: React.FormEvent) {
-    e.preventDefault();
-    if (loading) return;
-    setLoading(true);
-    setError("");
-
-    const { error: verifyError } = await supabase.auth.verifyOtp({
-      email: email.trim().toLowerCase(),
-      token: otp.trim(),
-      type: "email",
-    });
-
-    if (verifyError) {
+    if (signInError) {
       setLoading(false);
-      setError(verifyError.message);
+      setError("Incorrect email or password.");
       return;
     }
 
-    const { data: collaborator } = await supabase
+    // Verify this email is an approved collaborator
+    const { data: collab } = await supabase
       .from("collaborators")
       .select("status")
       .eq("email", email.trim().toLowerCase())
       .maybeSingle();
 
-    setLoading(false);
-
-    if (!collaborator || collaborator.status !== "approved") {
+    if (!collab || collab.status !== "approved") {
       await supabase.auth.signOut();
+      setLoading(false);
       setError(
-        collaborator?.status === "pending"
+        collab?.status === "pending"
           ? "Your application is still under review. We'll email you when approved."
           : "This email isn't registered as a collaborator. Please apply first."
       );
@@ -70,6 +54,26 @@ export default function CollaboratorLoginPage() {
     }
 
     window.location.href = "/collaborator/portal";
+  }
+
+  async function handleForgot(e: React.FormEvent) {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true);
+    setError("");
+
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      email.trim().toLowerCase(),
+      { redirectTo: `${window.location.origin}/collaborator/reset-password` }
+    );
+
+    setLoading(false);
+    if (resetError) {
+      setError(resetError.message);
+    } else {
+      setInfo("Check your inbox — we sent a password reset link.");
+      setStep("login");
+    }
   }
 
   return (
@@ -81,11 +85,70 @@ export default function CollaboratorLoginPage() {
         </div>
 
         <div className="a-login-card">
-          {step === "email" ? (
+          {step === "login" ? (
             <>
               <h2>Welcome back.</h2>
-              <p className="sub">Enter your email and we'll send you a one-time sign-in code.</p>
-              <form onSubmit={sendOtp}>
+              <p className="sub">Sign in with the password sent to you when you were approved.</p>
+              {info && (
+                <div className="a-feedback-row a-feedback-row--success" style={{ marginBottom: 14 }}>
+                  {info}
+                </div>
+              )}
+              <form onSubmit={handleLogin}>
+                <div className="a-field">
+                  <label className="a-field__label">Email address</label>
+                  <input
+                    className="a-input"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
+                    placeholder="you@example.com"
+                  />
+                </div>
+                <div className="a-field">
+                  <label className="a-field__label">Password</label>
+                  <input
+                    className="a-input"
+                    type="password"
+                    required
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    placeholder="••••••••••••"
+                  />
+                  <div className="a-field__hint">
+                    <button
+                      type="button"
+                      style={{ color: "var(--terracotta)", fontSize: 12 }}
+                      onClick={() => { setStep("forgot"); setError(""); setInfo(""); }}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                </div>
+                {error && (
+                  <div className="a-feedback-row" style={{ marginBottom: 14 }}>
+                    {error}
+                  </div>
+                )}
+                <button
+                  className="a-btn a-btn--primary a-btn--full a-btn--lg"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? "Signing in…" : "Sign in →"}
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <h2>Reset your password.</h2>
+              <p className="sub">Enter your email and we'll send you a reset link.</p>
+              <form onSubmit={handleForgot}>
                 <div className="a-field">
                   <label className="a-field__label">Email address</label>
                   <input
@@ -109,54 +172,15 @@ export default function CollaboratorLoginPage() {
                   type="submit"
                   disabled={loading}
                 >
-                  {loading ? "Sending code…" : "Send code →"}
+                  {loading ? "Sending…" : "Send reset link →"}
                 </button>
-              </form>
-            </>
-          ) : (
-            <>
-              <h2>Check your email.</h2>
-              <p className="sub">
-                We sent a 6-digit code to <strong>{email}</strong>.
-              </p>
-              <form onSubmit={verifyOtp}>
-                <div className="a-field">
-                  <label className="a-field__label">One-time code</label>
-                  <input
-                    className="a-input"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]{6}"
-                    maxLength={6}
-                    required
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                    disabled={loading}
-                    placeholder="123456"
-                    style={{ textAlign: "center", fontSize: 22, letterSpacing: "0.3em" }}
-                  />
-                  <div className="a-field__hint">
-                    Sent to {email} ·{" "}
-                    <button
-                      type="button"
-                      style={{ color: "var(--terracotta)", fontSize: 12 }}
-                      onClick={() => { setStep("email"); setOtp(""); setError(""); }}
-                    >
-                      change email
-                    </button>
-                  </div>
-                </div>
-                {error && (
-                  <div className="a-feedback-row" style={{ marginBottom: 14 }}>
-                    {error}
-                  </div>
-                )}
                 <button
-                  className="a-btn a-btn--primary a-btn--full a-btn--lg"
-                  type="submit"
-                  disabled={loading}
+                  type="button"
+                  className="a-btn a-btn--ghost a-btn--full"
+                  style={{ marginTop: 10 }}
+                  onClick={() => { setStep("login"); setError(""); }}
                 >
-                  {loading ? "Verifying…" : "Verify & enter →"}
+                  ← Back to sign in
                 </button>
               </form>
             </>

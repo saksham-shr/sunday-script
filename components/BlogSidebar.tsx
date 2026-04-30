@@ -143,7 +143,11 @@ export default function BlogSidebar({
     "w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container hover:text-primary transition-colors";
 
   return (
-    <aside className="hidden lg:flex sticky top-32 self-start flex-col items-center gap-2 py-4">
+    /* Single element — vertical on desktop (sticky sidebar), horizontal on mobile (below article via order-last) */
+    <aside className="
+      flex flex-row justify-center gap-6 py-4 border-t border-on-surface/10 order-last
+      lg:flex-col lg:gap-2 lg:py-4 lg:border-none lg:sticky lg:top-32 lg:self-start lg:order-first lg:items-center
+    ">
       {/* Like */}
       <div className="flex flex-col items-center gap-1">
         <button

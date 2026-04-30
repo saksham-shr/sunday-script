@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabaseBrowser as supabase } from "@/lib/supabase-browser";
 import AdminShell from "@/app/admin/_components/AdminShell";
 import { ToastProvider, useToast } from "@/app/admin/_components/Toast";
+import { sendEmail } from "@/app/actions/send-email";
 
 type GuestPost = {
   id: string;
@@ -48,7 +49,41 @@ function GuestsContent() {
   async function reject(g: GuestPost) {
     await supabase.from("guest_posts").update({ status: "rejected", reviewed_at: new Date().toISOString() }).eq("id", g.id);
     setGuests((prev) => prev.map((x) => x.id === g.id ? { ...x, status: "rejected" } : x));
-    toast("Guest post declined.");
+
+    // Send polite rejection email
+    await sendEmail({
+      to: g.author_email,
+      subject: "Your submission to The Sunday Script",
+      replyTo: "shriparnasharma2008@gmail.com",
+      html: `
+        <div style="max-width:520px;margin:0 auto;font-family:Georgia,serif;color:#1a1a1a;padding:32px 16px;">
+          <p style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:24px;">The Sunday Script</p>
+          <p style="font-size:16px;line-height:1.7;">Dear ${g.author_name},</p>
+          <p style="font-size:16px;line-height:1.7;">
+            Thank you so much for taking the time to share your piece — <em>"${g.title}"</em> — with The Sunday Script.
+            It means a great deal that you thought of us.
+          </p>
+          <p style="font-size:16px;line-height:1.7;">
+            After careful consideration, we won't be moving forward with this submission at this time.
+            This is a reflection of fit rather than quality — we receive many thoughtful pieces and can only
+            feature a few each season.
+          </p>
+          <p style="font-size:16px;line-height:1.7;">
+            Please don't be discouraged. We'd genuinely love to read more from you in the future.
+          </p>
+          <p style="font-size:16px;line-height:1.7;">With warmth,<br/>Shriparna<br/><span style="color:#888;font-size:13px;">The Sunday Script</span></p>
+          <hr style="margin:32px 0;border:none;border-top:1px solid #e5e0d8;" />
+          <p style="font-size:11px;color:#aaa;">You can reply to this email to reach us directly.</p>
+        </div>`,
+    });
+
+    toast("Guest post declined — rejection email sent.");
+  }
+
+  async function deletePost(g: GuestPost) {
+    await supabase.from("guest_posts").delete().eq("id", g.id);
+    setGuests((prev) => prev.filter((x) => x.id !== g.id));
+    toast(`"${g.title}" deleted.`);
   }
 
   function wordCount(html: string) {
@@ -113,6 +148,9 @@ function GuestsContent() {
                   <button className="a-btn a-btn--success a-btn--sm" onClick={() => approve(g)}>Approve</button>
                   <button className="a-btn a-btn--danger a-btn--sm" onClick={() => reject(g)}>Decline</button>
                 </>
+              )}
+              {g.status === "rejected" && (
+                <button className="a-btn a-btn--danger a-btn--sm" onClick={() => deletePost(g)}>Delete</button>
               )}
             </div>
 

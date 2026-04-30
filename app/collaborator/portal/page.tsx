@@ -14,6 +14,7 @@ type Post = {
   title: string;
   status: string;
   updated_at: string;
+  created_at: string;
   published_at: string | null;
   word_count: number | null;
 };
@@ -30,6 +31,15 @@ const STATUS_BADGE: Record<string, { cls: string; label: string }> = {
 function fmt(iso: string | null) {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function expiryInfo(iso: string): { label: string; urgent: boolean } {
+  const submitted = new Date(iso);
+  const expires = new Date(submitted.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const daysLeft = Math.ceil((expires.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+  if (daysLeft <= 0) return { label: "Expired", urgent: true };
+  if (daysLeft <= 7) return { label: `${daysLeft}d to edit`, urgent: true };
+  return { label: `${daysLeft}d remaining`, urgent: false };
 }
 
 export default function CollaboratorPortal() {
@@ -59,7 +69,7 @@ export default function CollaboratorPortal() {
 
       const { data: myPosts } = await supabase
         .from("posts")
-        .select("id, title, status, updated_at, published_at, word_count")
+        .select("id, title, status, updated_at, created_at, published_at, word_count")
         .eq("author_name", collabData.name)
         .order("updated_at", { ascending: false });
 
@@ -124,19 +134,23 @@ export default function CollaboratorPortal() {
               <div className="a-section">
                 <div className="a-section__head">
                   <h2 className="a-section__title">Revisions requested</h2>
+                  <span style={{ fontSize: 12, color: "var(--muted)" }}>Edit &amp; resubmit within 30 days or the post will be removed</span>
                 </div>
-                {revisions.map((p) => (
-                  <div key={p.id} className="a-draft-card" style={{ borderLeftColor: "var(--amber)", borderLeftWidth: 3 }}>
-                    <div className="a-draft-card__body">
-                      <div className="a-draft-card__title">{p.title}</div>
-                      <div className="a-draft-card__meta">Last updated {fmt(p.updated_at)}</div>
+                {revisions.map((p) => {
+                  const exp = expiryInfo(p.updated_at);
+                  return (
+                    <div key={p.id} className="a-draft-card" style={{ borderLeftColor: exp.urgent ? "var(--danger, #c0392b)" : "var(--amber)", borderLeftWidth: 3 }}>
+                      <div className="a-draft-card__body">
+                        <div className="a-draft-card__title">{p.title}</div>
+                        <div className="a-draft-card__meta">Last updated {fmt(p.updated_at)}</div>
+                      </div>
+                      <span className={`a-badge ${exp.urgent ? "a-badge--danger" : "a-badge--amber"}`}>{exp.label}</span>
+                      <button className="a-btn a-btn--primary a-btn--sm" onClick={() => window.location.href = `/collaborator/write/${p.id}`}>
+                        Edit →
+                      </button>
                     </div>
-                    <span className="a-badge a-badge--amber">Revisions needed</span>
-                    <button className="a-btn a-btn--primary a-btn--sm" onClick={() => window.location.href = `/collaborator/write/${p.id}`}>
-                      Edit →
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
@@ -171,20 +185,25 @@ export default function CollaboratorPortal() {
             <div className="a-section">
               <div className="a-section__head">
                 <h2 className="a-section__title">Submitted posts</h2>
-                <span style={{ fontSize: 13, color: "var(--muted)" }}>Awaiting review</span>
+                <span style={{ fontSize: 13, color: "var(--muted)" }}>Auto-removed if not approved within 30 days</span>
               </div>
               {submitted.length === 0 ? (
                 <div className="a-empty">Nothing submitted right now.</div>
               ) : (
-                submitted.map((p) => (
-                  <div key={p.id} className="a-draft-card">
-                    <div className="a-draft-card__body">
-                      <div className="a-draft-card__title">{p.title}</div>
-                      <div className="a-draft-card__meta">Submitted {fmt(p.updated_at)} · awaiting Shriparna's review</div>
+                submitted.map((p) => {
+                  const exp = expiryInfo(p.created_at);
+                  return (
+                    <div key={p.id} className="a-draft-card">
+                      <div className="a-draft-card__body">
+                        <div className="a-draft-card__title">{p.title}</div>
+                        <div className="a-draft-card__meta">Submitted {fmt(p.updated_at)} · awaiting Shriparna's review</div>
+                      </div>
+                      <span className={`a-badge ${exp.urgent ? "a-badge--danger" : "a-badge--terracotta"}`}>
+                        {exp.urgent ? exp.label : "Under review"}
+                      </span>
                     </div>
-                    <span className="a-badge a-badge--terracotta">Under review</span>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
@@ -220,6 +239,24 @@ export default function CollaboratorPortal() {
             </ul>
             <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 8 }}>
               Questions? <a href="mailto:shriparnasharma2008@gmail.com" style={{ color: "var(--terracotta)" }}>Reach Shriparna →</a>
+            </div>
+            <hr style={{ margin: "14px 0", border: "none", borderTop: "1px solid var(--line-soft)" }} />
+            <div style={{ fontSize: 12, color: "var(--muted)" }}>
+              <a
+                href="/collaborator/reset-password"
+                style={{ color: "var(--terracotta)" }}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (collab) {
+                    await supabase.auth.resetPasswordForEmail(collab.email, {
+                      redirectTo: `${window.location.origin}/collaborator/reset-password`,
+                    });
+                    alert("Check your email for a password reset link.");
+                  }
+                }}
+              >
+                Change password →
+              </a>
             </div>
           </aside>
         </div>

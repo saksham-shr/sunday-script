@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabaseBrowser as supabase } from "@/lib/supabase-browser";
 import AdminShell from "@/app/admin/_components/AdminShell";
 import { ToastProvider, useToast } from "@/app/admin/_components/Toast";
+import { approveCollaborator } from "@/app/actions/approve-collaborator";
 
 type Collaborator = {
   id: string;
@@ -34,10 +35,15 @@ function CollaboratorsContent() {
   }, []);
 
   async function approve(c: Collaborator) {
-    await supabase.from("collaborators").update({ status: "approved" }).eq("id", c.id);
+    toast(`Approving ${c.name}…`);
+    const result = await approveCollaborator(c.id, c.name, c.email);
+    if (!result.ok) {
+      toast(`Failed: ${result.error}`);
+      return;
+    }
     setPending((prev) => prev.filter((x) => x.id !== c.id));
     setApproved((prev) => [{ ...c, status: "approved" }, ...prev]);
-    toast(`${c.name} approved.`, "success");
+    toast(`${c.name} approved — welcome email sent.`, "success");
   }
 
   async function decline(c: Collaborator) {
@@ -121,7 +127,7 @@ function CollaboratorsContent() {
           {approved.length > 0 && (
             <>
               <div style={{ padding: "10px 16px", marginBottom: 16, background: "var(--cream-deep)", borderRadius: "var(--a-radius)", fontSize: 12, color: "var(--muted)", fontFamily: "var(--a-mono)" }}>
-                Approved collaborators sign in with OTP (no password) at <strong style={{ color: "var(--ink)" }}>/collaborator/login</strong>
+                Approved collaborators sign in with their email + password at <strong style={{ color: "var(--ink)" }}>/collaborator/login</strong>. A temporary password is emailed on approval.
               </div>
               <div className="a-tbl-wrap">
                 <table className="a-tbl">
